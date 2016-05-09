@@ -1,0 +1,1006 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0036)http://liguangsheng.cn/java-nio.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- 2016-04-19 周二 14:53 -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java NIO</title>
+<meta name="generator" content="Org-mode">
+<meta name="author" content="Li Guangsheng">
+<link rel="stylesheet" type="text/css" href="./Java NIO_files/default.css">
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Java NIO</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline4">1. NIO 概述</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline1">1.1. 异步非阻塞IO</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline2">1.2. NIO 优点</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline3">1.3. NIO 三大组件</a></li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline12">2. Buffer</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline5">2.1. Buffer介绍</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline6">2.2. 重要属性</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline7">2.3. Buffer 读写</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline9">2.4. Buffer 方法</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline8">2.4.1. example</a></li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline10">2.5. ByteBuffer的as系列方法</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline11">2.6. MappedByteBuffer</a></li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline30">3. Channel</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline13">3.1. Channel 概述</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline17">3.2. FileChannel</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline14">3.2.1. 简单使用示例</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline15">3.2.2. 使用FileChannel复制文件</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline16">3.2.3. FileLock文件加锁</a></li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline19">3.3. ServerSocketChannel</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline18">3.3.1. ServerSocketChannel建立Server</a></li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline22">3.4. SocketChannel</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline20">3.4.1. ServerSocketChannel建立Server</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline21">3.4.2. 使用SocketChannel发送请求</a></li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline25">3.5. DataGramChannel</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline23">3.5.1. 使用DatagramChannel建立Server</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline24">3.5.2. 使用DatagramChannel发送数据</a></li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline29">3.6. Pipe</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline26">3.6.1. Producer 线程写数据</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline27">3.6.2. Consumer 线程读数据</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline28">3.6.3. 测试</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline33">4. Selector</a>
+<ul>
+<li>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline31">4.0.1. Selector使用的基本步骤</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline32">4.0.2. Selector使用示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline36">5. Scatter/Gather</a>
+<ul>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline34">5.1. Scattering Reads</a></li>
+<li><a href="http://liguangsheng.cn/java-nio.html#orgheadline35">5.2. Gathering Writes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgheadline4" class="outline-2">
+<h2 id="orgheadline4"><span class="section-number-2">1</span> NIO 概述</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Java NIO(New IO)是一个可以替代标准Java IO API的IO API（从Java 1.4开始)，Java NIO提供了与标准IO不同的IO工作方式。
+</p>
+
+
+<blockquote>
+<p>
+一般来说 I/O 模型可以分为：同步阻塞，同步非阻塞，异步阻塞，异步非阻塞 四种IO模型
+</p>
+
+<p>
+同步阻塞 IO ：
+在此种方式下，用户进程在发起一个 IO 操作以后，必须等待 IO 操作的完成，只有当真正完成了 IO 操作以后，用户进程才能运行。 JAVA传统的 IO 模型属于此种方式！
+</p>
+
+<p>
+同步非阻塞 IO:
+在此种方式下，用户进程发起一个 IO 操作以后 边可 返回做其它事情，但是用户进程需要时不时的询问 IO 操作是否就绪，这就要求用户进程不停的去询问，从而引入不必要的 CPU 资源浪费。其中目前 JAVA 的 NIO 就属于同步非阻塞 IO 。
+</p>
+
+<p>
+异步阻塞 IO ：
+此种方式下是指应用发起一个 IO 操作以后，不等待内核 IO 操作的完成，等内核完成 IO 操作以后会通知应用程序，这其实就是同步和异步最关键的区别，同步必须等待或者主动的去询问 IO 是否完成，那么为什么说是阻塞的呢？因为此时是通过 select 系统调用来完成的，而 select 函数本身的实现方式是阻塞的，而采用 select 函数有个好处就是它可以同时监听多个文件句柄，从而提高系统的并发性！
+</p>
+
+<p>
+异步非阻塞 IO:
+在此种模式下，用户进程只需要发起一个 IO 操作然后立即返回，等 IO 操作真正的完成以后，应用程序会得到 IO 操作完成的通知，此时用户进程只需要对数据进行处理就好了，不需要进行实际的 IO 读写操作，因为 真正的 IO读取或者写入操作已经由 内核完成了。目前 Java 中还没有支持此种 IO 模型。
+</p>
+
+<p>
+<a href="https://www.zhihu.com/question/27991975/answer/69041973">知乎-郭无心的回答</a>
+</p>
+</blockquote>
+</div>
+
+<div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> 异步非阻塞IO</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+很多人喜欢将JDK1.4提供的NIO框架称为异步非阻塞IO，但是，如果严格按照Unix网络编程模型和JDK的实现进行区分，实际上它只能被称为非阻塞IO，不能叫异步非阻塞IO。在早期的JDK1.4和1.5 update10版本之前，JDK的Selector基于select/poll模型实现，它是基于IO复用技术的非阻塞IO，不是异步IO。在JDK1.5 update10和linux core2.6以上版本，sun优化了Selctor的实现，它底层使用epoll替换了select/poll,上层的API并没有变化，我们可以认为是JDK NIO的一次性能优化，但是它仍旧没有改变IO的模型。
+</p>
+
+<p>
+JDK1.7提供的NIO2.0，新增了异步的套接字通道，它是真正的异步IO，在异步IO操作的时候可以传递信号变量，当操作完成之后会回调相关的方法，异步IO也被称为AIO。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline2" class="outline-3">
+<h3 id="orgheadline2"><span class="section-number-3">1.2</span> NIO 优点</h3>
+<div class="outline-text-3" id="text-1-2">
+<ol class="org-ol">
+<li>分散与聚集读取</li>
+<li>文件锁定</li>
+<li>内存映射</li>
+<li>非阻塞IO</li>
+<li>…</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3"><span class="section-number-3">1.3</span> NIO 三大组件</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li>Buffers, 数据容器</li>
+<li>Channels, I/O操作的连接实体</li>
+<li>Selector, 选择器</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline12" class="outline-2">
+<h2 id="orgheadline12"><span class="section-number-2">2</span> Buffer</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">2.1</span> Buffer介绍</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Buffer 是java.nio中定义的抽象类，Buffer的本质是一个数据的容器(数组)和一套操作数据的方法。
+</p>
+
+<p>
+Buffer有以下几种具体的实现类:
+</p>
+
+<ul class="org-ul">
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>DoubleBuffer</li>
+<li>FloatBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>MappedByteBuffer</li>
+<li>ShortBuffer</li>
+</ul>
+<p>
+分别对应了不同类型的读写。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline6" class="outline-3">
+<h3 id="orgheadline6"><span class="section-number-3">2.2</span> 重要属性</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Buffer有3个重要的属性:
+</p>
+
+<ul class="org-ul">
+<li>capacity 表示当前buffer的容量</li>
+<li>limit 表示当前最多可读/可写的数据的容量</li>
+<li>position 表示当前读/写的位置</li>
+</ul>
+
+<p>
+Buffer可以通过capacity(), limit(), position()来获取这些属性。同时可以通过limit(int), position(int)来设置后两个属性。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline7" class="outline-3">
+<h3 id="orgheadline7"><span class="section-number-3">2.3</span> Buffer 读写</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+使用buffer的一般情况是先写入，后读取。当一个buffer初始化之后，buffer此时处于写模式，capacity表示容量，limit表示最多可写入的数据的数量，position为0。每写入一个元素,position自增一次。
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1024</span><span style="color: #bc6ec5;">)</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+    buffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a String."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>; <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">写入</span>
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 0
+Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 17
+</pre>
+<p>
+当调用flip方法将buffer从写模式转变为读模式后，capacity依旧表示buffer的容量，limit则表示最多可以读取多少个元素，position表示已经读取的元素数量。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1024</span><span style="color: #bc6ec5;">)</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+    buffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a String."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+    buffer.flip<span style="color: #bc6ec5;">()</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">byte</span> <span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[</span><span style="color: #a45bad;">10</span><span style="color: #bc6ec5;">]</span>;
+    buffer.get<span style="color: #bc6ec5;">(</span>bytes, <span style="color: #a45bad;">0</span>, <span style="color: #a45bad;">10</span><span style="color: #bc6ec5;">)</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">读取</span>
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 0
+Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 17
+Buffer capacity: 1024
+Buffer limit: 17
+Buffer position: 0
+Buffer capacity: 1024
+Buffer limit: 17
+Buffer position: 10
+</pre>
+<p>
+实际上buffer没有明确规定所谓的读模式和写模式，flip意为翻转，flip函数所做的操作只是将limit设为position,position重置为0而已。buffer可以手动的设置limit和position来灵活操作。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1024</span><span style="color: #bc6ec5;">)</span>;
+    buffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a String."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    buffer.position<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">0</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[</span><span style="color: #a45bad;">17</span><span style="color: #bc6ec5;">]</span>;
+    buffer.get<span style="color: #bc6ec5;">(</span>bytes, <span style="color: #a45bad;">0</span>, <span style="color: #a45bad;">17</span><span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>bytes<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    buffer.position<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">10</span><span style="color: #bc6ec5;">)</span>;
+    buffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"fixed String."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    buffer.position<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">0</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bytes2</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[</span><span style="color: #a45bad;">23</span><span style="color: #bc6ec5;">]</span>;
+    buffer.get<span style="color: #bc6ec5;">(</span>bytes2, <span style="color: #a45bad;">0</span>, <span style="color: #a45bad;">23</span><span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>bytes2<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">This is a String.
+This is a fixed String.
+</pre>
+<p>
+所以buffer本质就是一个数组和对这个数组的封装。我们可以通过Buffer提供的操作来灵活的操作数据。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline9" class="outline-3">
+<h3 id="orgheadline9"><span class="section-number-3">2.4</span> Buffer 方法</h3>
+<div class="outline-text-3" id="text-2-4">
+<ul class="org-ul">
+<li>mark() 将buffer的标记设为当前位置</li>
+<li>reset() 将buffer的position重置为上次mark的位置, 调用reset并不会改变或丢弃mark标记</li>
+<li>clear() 清除buffer中的数据,positon重置为0，limit设为capacity，丢弃标记</li>
+<li>rewind() position重置为0，丢弃标记</li>
+<li>remaining() 返回limit-position</li>
+<li>hasRemaining() 返回position和limit是否有数据</li>
+</ul>
+</div>
+<div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8"><span class="section-number-4">2.4.1</span> example</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1024</span><span style="color: #bc6ec5;">)</span>;
+    buffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a String."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+    buffer.mark<span style="color: #bc6ec5;">()</span>;
+    buffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a second String."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+    buffer.reset<span style="color: #bc6ec5;">()</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 17
+Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 41
+Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 17
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline10" class="outline-3">
+<h3 id="orgheadline10"><span class="section-number-3">2.5</span> ByteBuffer的as系列方法</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+ByteBuffer的as系列方法用position和limit之间的生成一个新的Buffer。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">byteBuffer</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1024</span><span style="color: #bc6ec5;">)</span>;
+    byteBuffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"abcdefgh"</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">IntBuffer</span> <span style="color: #7590db;">intBuffer</span> = byteBuffer.asIntBuffer<span style="color: #bc6ec5;">()</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>byteBuffer<span style="color: #bc6ec5;">)</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>intBuffer<span style="color: #bc6ec5;">)</span>;
+    byteBuffer.flip<span style="color: #bc6ec5;">()</span>;
+    <span style="color: #ce537a; font-weight: bold;">IntBuffer</span> <span style="color: #7590db;">intBuffer2</span> = byteBuffer.asIntBuffer<span style="color: #bc6ec5;">()</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>byteBuffer<span style="color: #bc6ec5;">)</span>;
+    printBufferInfo<span style="color: #bc6ec5;">(</span>intBuffer2<span style="color: #bc6ec5;">)</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">Buffer capacity: 1024
+Buffer limit: 1024
+Buffer position: 8
+Buffer capacity: 254
+Buffer limit: 254
+Buffer position: 0
+Buffer capacity: 1024
+Buffer limit: 8
+Buffer position: 0
+Buffer capacity: 2
+Buffer limit: 2
+Buffer position: 0
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline11" class="outline-3">
+<h3 id="orgheadline11"><span class="section-number-3">2.6</span> MappedByteBuffer</h3>
+<div class="outline-text-3" id="text-2-6">
+<p>
+MappedByteBuffer是java nio引入的文件内存映射方案，读写性能极高。
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">RandomAccessFile</span> <span style="color: #7590db;">file</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">RandomAccessFile</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"E:/data.txt"</span>, <span style="color: #2d9574;">"rw"</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">FileChannel</span> <span style="color: #7590db;">channel</span> = file.getChannel<span style="color: #bc6ec5;">()</span>;
+    <span style="color: #ce537a; font-weight: bold;">MappedByteBuffer</span> <span style="color: #7590db;">buffer</span> = channel.map<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">FileChannel</span>.<span style="color: #a45bad;">MapMode</span>.READ_WRITE, <span style="color: #a45bad;">0</span>, channel.size<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[</span>buffer.limit<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">]</span>;
+    buffer.get<span style="color: #bc6ec5;">(</span>bytes, <span style="color: #a45bad;">0</span>, buffer.limit<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>bytes, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    buffer.flip<span style="color: #bc6ec5;">()</span>;
+    buffer.clear<span style="color: #bc6ec5;">()</span>;
+    buffer.put<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Hello World!"</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    buffer.flip<span style="color: #bc6ec5;">()</span>;
+    <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bytes2</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[</span>buffer.limit<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">]</span>;
+    buffer.get<span style="color: #bc6ec5;">(</span>bytes2, <span style="color: #a45bad;">0</span>, buffer.limit<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>bytes2, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    file.close<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline30" class="outline-2">
+<h2 id="orgheadline30"><span class="section-number-2">3</span> Channel</h2>
+<div class="outline-text-2" id="text-3">
+</div><div id="outline-container-orgheadline13" class="outline-3">
+<h3 id="orgheadline13"><span class="section-number-3">3.1</span> Channel 概述</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Java NIO的通道类似流，但又有些不同：
+</p>
+
+<p>
+既可以从通道中读取数据，又可以写数据到通道。但流的读写通常是单向的。 通道可以异步地读写。 通道中的数据总是要先读到一个Buffer，或者总是要从一个Buffer中写入。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline17" class="outline-3">
+<h3 id="orgheadline17"><span class="section-number-3">3.2</span> FileChannel</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+FileChannel可以使用open()打开，也可以从InputStream、OutputStream、RandomAccessFile中来获取。用完FileChannel后必须将其关闭。
+</p>
+</div>
+
+<div id="outline-container-orgheadline14" class="outline-4">
+<h4 id="orgheadline14"><span class="section-number-4">3.2.1</span> 简单使用示例</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+  <span style="color: #ce537a; font-weight: bold;">FileChannel</span> <span style="color: #7590db;">channel</span> = FileChannel.open<span style="color: #bc6ec5;">(</span>Paths.get<span style="color: #2d9574;">(</span><span style="color: #2d9574;">"E:/data.txt"</span><span style="color: #2d9574;">)</span>, <span style="color: #a45bad;">StandardOpenOption</span>.READ<span style="color: #bc6ec5;">)</span>;
+  <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span><span style="color: #ce537a; font-weight: bold;">int</span><span style="color: #2d9574;">)</span> channel.size<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+  channel.read<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+  System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>buffer.array<span style="color: #67b11d;">()</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+  channel.close<span style="color: #bc6ec5;">()</span>;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline15" class="outline-4">
+<h4 id="orgheadline15"><span class="section-number-4">3.2.2</span> 使用FileChannel复制文件</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">copyFile</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">src</span>, <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">dst</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">File</span> <span style="color: #7590db;">fi</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">File</span><span style="color: #bc6ec5;">(</span>src<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">File</span> <span style="color: #7590db;">fo</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">File</span><span style="color: #bc6ec5;">(</span>dst<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">FileInputStream</span> <span style="color: #7590db;">fis</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">FileInputStream</span><span style="color: #bc6ec5;">(</span>fi<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">FileOutputStream</span> <span style="color: #7590db;">fos</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">FileOutputStream</span><span style="color: #bc6ec5;">(</span>fo<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">FileChannel</span> <span style="color: #7590db;">fic</span> = fis.getChannel<span style="color: #bc6ec5;">()</span>;
+    <span style="color: #ce537a; font-weight: bold;">FileChannel</span> <span style="color: #7590db;">foc</span> = fos.getChannel<span style="color: #bc6ec5;">()</span>;
+    fic.transferTo<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">0</span>, fic.size<span style="color: #2d9574;">()</span>, foc<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">foc.transferFrom(fic, 0, fic.size()); // 与上一句等价</span>
+    fic.close<span style="color: #bc6ec5;">()</span>;
+    foc.close<span style="color: #bc6ec5;">()</span>;
+    fis.close<span style="color: #bc6ec5;">()</span>;
+    fos.close<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline16" class="outline-4">
+<h4 id="orgheadline16"><span class="section-number-4">3.2.3</span> FileLock文件加锁</h4>
+<div class="outline-text-4" id="text-3-2-3">
+<p>
+通过lock函数对文件加锁，排斥其他进程访问当前文件。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">FileChannel</span> <span style="color: #7590db;">channel</span> = FileChannel.open<span style="color: #bc6ec5;">(</span>Paths.get<span style="color: #2d9574;">(</span><span style="color: #2d9574;">"E:/data.txt"</span><span style="color: #2d9574;">)</span>, <span style="color: #a45bad;">StandardOpenOption</span>.READ<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">FileLock</span> <span style="color: #7590db;">lock</span> = <span style="color: #a45bad;">null</span>;
+    lock = channel.lock<span style="color: #bc6ec5;">()</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">阻塞方式，获取到锁之前挂起</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">lock = channel.tryLock(); // 非阻塞，获取不到lock为null</span>
+
+    <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">content</span> = readWholeFile<span style="color: #bc6ec5;">(</span>channel, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span>content<span style="color: #bc6ec5;">)</span>;
+
+    lock.release<span style="color: #bc6ec5;">()</span>;
+    channel.close<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline19" class="outline-3">
+<h3 id="orgheadline19"><span class="section-number-3">3.3</span> ServerSocketChannel</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+Java NIO中的 ServerSocketChannel 是一个可以监听新进来的TCP连接的通道, 就像标准IO中的ServerSocket一样。ServerSocketChannel类在 java.nio.channels包中。
+</p>
+
+<p>
+ServerSocketChannel可以通过configureBlocking方法设置是否使用阻塞模式。
+如果使用非阻塞模式，accept在没有请求时会立即返回null.
+</p>
+</div>
+
+<div id="outline-container-orgheadline18" class="outline-4">
+<h4 id="orgheadline18"><span class="section-number-4">3.3.1</span> ServerSocketChannel建立Server</h4>
+<div class="outline-text-4" id="text-3-3-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">ServerSocketChannel</span> <span style="color: #7590db;">channel</span> = ServerSocketChannel.open<span style="color: #bc6ec5;">()</span>;
+    channel.socket<span style="color: #bc6ec5;">()</span>.bind<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span><span style="color: #2d9574;">(</span><span style="color: #2d9574;">"localhost"</span>, <span style="color: #a45bad;">8888</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    channel.configureBlocking<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">true</span><span style="color: #bc6ec5;">)</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">设置为阻塞模式</span>
+
+    <span style="color: #ce537a; font-weight: bold;">SocketChannel</span> <span style="color: #7590db;">socketChannel</span> = channel.accept<span style="color: #bc6ec5;">()</span>; <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">接受一次请求</span>
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1024</span><span style="color: #bc6ec5;">)</span>;
+    socketChannel.read<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span>;
+    buffer.flip<span style="color: #bc6ec5;">()</span>;
+    <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[</span>buffer.remaining<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">]</span>;
+    buffer.get<span style="color: #bc6ec5;">(</span>bytes<span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>bytes, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    socketChannel.close<span style="color: #bc6ec5;">()</span>;
+    channel.close<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">POST / HTTP/1.1
+Host: localhost:8888
+Connection: keep-alive
+Content-Length: 6
+Cache-Control: no-cache
+Origin: chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36
+Content-Type: text/plain;charset=UTF-8
+Accept: */*
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.8
+
+Hello!
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline22" class="outline-3">
+<h3 id="orgheadline22"><span class="section-number-3">3.4</span> SocketChannel</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+Java NIO中的SocketChannel是一个连接到TCP网络套接字的通道。可以通过以下2种方式创建SocketChannel：
+</p>
+
+<ol class="org-ol">
+<li>打开一个SocketChannel并连接到互联网上的某台服务器。</li>
+<li>一个新连接到达ServerSocketChannel时，会创建一个SocketChannel。</li>
+</ol>
+</div>
+
+<div id="outline-container-orgheadline20" class="outline-4">
+<h4 id="orgheadline20"><span class="section-number-4">3.4.1</span> ServerSocketChannel建立Server</h4>
+<div class="outline-text-4" id="text-3-4-1">
+<p>
+先用ServerSocketChannel建立一个Server, 这个Server接收到exit消息时推出。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">io</span>.<span style="color: #ce537a; font-weight: bold;">IOException</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">net</span>.<span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #ce537a; font-weight: bold;">ByteBuffer</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">ServerSocketChannel</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">SocketChannel</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Server</span><span style="color: #4f97d7;">{</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">[]</span> <span style="color: #7590db;">args</span><span style="color: #bc6ec5;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #bc6ec5;">{</span>
+        <span style="color: #ce537a; font-weight: bold;">ServerSocketChannel</span> <span style="color: #7590db;">channel</span> = ServerSocketChannel.open<span style="color: #2d9574;">()</span>;
+        channel.socket<span style="color: #2d9574;">()</span>.bind<span style="color: #2d9574;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"localhost"</span>, <span style="color: #a45bad;">8888</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>;
+        channel.configureBlocking<span style="color: #2d9574;">(</span><span style="color: #a45bad;">false</span><span style="color: #2d9574;">)</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">while</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">true</span><span style="color: #2d9574;">){</span>
+            <span style="color: #ce537a; font-weight: bold;">SocketChannel</span> <span style="color: #7590db;">socketChannel</span> = channel.accept<span style="color: #67b11d;">()</span>;
+            <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>socketChannel != <span style="color: #a45bad;">null</span><span style="color: #67b11d;">){</span>
+                <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #b1951d;">(</span><span style="color: #a45bad;">1024</span><span style="color: #b1951d;">)</span>;
+                socketChannel.read<span style="color: #b1951d;">(</span>buffer<span style="color: #b1951d;">)</span>;
+                buffer.flip<span style="color: #b1951d;">()</span>;
+                <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #b1951d;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #b1951d;">[</span>buffer.remaining<span style="color: #4f97d7;">()</span><span style="color: #b1951d;">]</span>;
+                buffer.get<span style="color: #b1951d;">(</span>bytes<span style="color: #b1951d;">)</span>;
+                <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">message</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #b1951d;">(</span>bytes, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #b1951d;">)</span>;
+                System.out.println<span style="color: #b1951d;">(</span>message<span style="color: #b1951d;">)</span>;
+                socketChannel.close<span style="color: #b1951d;">()</span>;
+                <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #b1951d;">(</span><span style="color: #2d9574;">"exit"</span>.equals<span style="color: #4f97d7;">(</span>message<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7; font-weight: bold;">break</span>;
+            <span style="color: #67b11d;">}</span>
+        <span style="color: #2d9574;">}</span>
+        channel.close<span style="color: #2d9574;">()</span>;
+    <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline21" class="outline-4">
+<h4 id="orgheadline21"><span class="section-number-4">3.4.2</span> 使用SocketChannel发送请求</h4>
+<div class="outline-text-4" id="text-3-4-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">SocketChannel</span> <span style="color: #7590db;">channel</span> = SocketChannel.open<span style="color: #bc6ec5;">()</span>;
+    channel.connect<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span><span style="color: #2d9574;">(</span><span style="color: #2d9574;">"localhost"</span>, <span style="color: #a45bad;">8888</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    channel.write<span style="color: #bc6ec5;">(</span>ByteBuffer.wrap<span style="color: #2d9574;">(</span><span style="color: #2d9574;">"exit"</span>.getBytes<span style="color: #67b11d;">()</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    channel.close<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline25" class="outline-3">
+<h3 id="orgheadline25"><span class="section-number-3">3.5</span> DataGramChannel</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+Java NIO中的DatagramChannel是一个能收发UDP包的通道。因为UDP是无连接的网络协议，所以不能像其它通道那样读取和写入。它发送和接收的是数据包。
+</p>
+</div>
+
+<div id="outline-container-orgheadline23" class="outline-4">
+<h4 id="orgheadline23"><span class="section-number-4">3.5.1</span> 使用DatagramChannel建立Server</h4>
+<div class="outline-text-4" id="text-3-5-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">io</span>.<span style="color: #ce537a; font-weight: bold;">IOException</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">net</span>.<span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">net</span>.<span style="color: #ce537a; font-weight: bold;">SocketAddress</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #ce537a; font-weight: bold;">ByteBuffer</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">DatagramChannel</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Server</span><span style="color: #4f97d7;">{</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">[]</span> <span style="color: #7590db;">args</span><span style="color: #bc6ec5;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #bc6ec5;">{</span>
+        <span style="color: #ce537a; font-weight: bold;">DatagramChannel</span> <span style="color: #7590db;">channel</span> = DatagramChannel.open<span style="color: #2d9574;">()</span>;
+        channel.socket<span style="color: #2d9574;">()</span>.bind<span style="color: #2d9574;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"localhost"</span>, <span style="color: #a45bad;">8822</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>;
+        channel.configureBlocking<span style="color: #2d9574;">(</span><span style="color: #a45bad;">false</span><span style="color: #2d9574;">)</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">while</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">true</span><span style="color: #2d9574;">){</span>
+            <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #67b11d;">(</span><span style="color: #a45bad;">1024</span><span style="color: #67b11d;">)</span>;
+            <span style="color: #ce537a; font-weight: bold;">SocketAddress</span> <span style="color: #7590db;">addr</span> = channel.receive<span style="color: #67b11d;">(</span>buffer<span style="color: #67b11d;">)</span>;
+            <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>addr != <span style="color: #a45bad;">null</span><span style="color: #67b11d;">){</span>
+                System.out.println<span style="color: #b1951d;">(</span>addr<span style="color: #b1951d;">)</span>;
+                buffer.flip<span style="color: #b1951d;">()</span>;
+                <span style="color: #ce537a; font-weight: bold;">byte</span> <span style="color: #b1951d;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #b1951d;">[</span>buffer.remaining<span style="color: #4f97d7;">()</span><span style="color: #b1951d;">]</span>;
+                buffer.get<span style="color: #b1951d;">(</span>bytes<span style="color: #b1951d;">)</span>;
+                <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">message</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #b1951d;">(</span>bytes<span style="color: #b1951d;">)</span>;
+                System.out.println<span style="color: #b1951d;">(</span>message<span style="color: #b1951d;">)</span>;
+                <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #b1951d;">(</span><span style="color: #2d9574;">"exit"</span>.equals<span style="color: #4f97d7;">(</span>message<span style="color: #4f97d7;">)</span><span style="color: #b1951d;">)</span> <span style="color: #4f97d7; font-weight: bold;">break</span>;
+            <span style="color: #67b11d;">}</span>
+        <span style="color: #2d9574;">}</span>
+        channel.disconnect<span style="color: #2d9574;">()</span>;
+        channel.close<span style="color: #2d9574;">()</span>;
+    <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline24" class="outline-4">
+<h4 id="orgheadline24"><span class="section-number-4">3.5.2</span> 使用DatagramChannel发送数据</h4>
+<div class="outline-text-4" id="text-3-5-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">DatagramChannel</span> <span style="color: #7590db;">channel</span> = DatagramChannel.open<span style="color: #bc6ec5;">()</span>;
+    channel.connect<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span><span style="color: #2d9574;">(</span><span style="color: #2d9574;">"localhost"</span>, <span style="color: #a45bad;">8822</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #4f97d7; font-weight: bold;">while</span> <span style="color: #bc6ec5;">(</span>channel.isConnected<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span> <span style="color: #bc6ec5;">{</span>
+      <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.wrap<span style="color: #2d9574;">(</span><span style="color: #2d9574;">"exit"</span>.getBytes<span style="color: #67b11d;">()</span><span style="color: #2d9574;">)</span>;
+      channel.write<span style="color: #2d9574;">(</span>buffer<span style="color: #2d9574;">)</span>;
+      <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    <span style="color: #bc6ec5;">}</span>
+    channel.disconnect<span style="color: #bc6ec5;">()</span>;
+    channel.close<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline29" class="outline-3">
+<h3 id="orgheadline29"><span class="section-number-3">3.6</span> Pipe</h3>
+<div class="outline-text-3" id="text-3-6">
+<p>
+Java NIO 管道是2个线程之间的单向数据连接。Pipe有一个source通道和一个sink通道。数据会被写到sink通道，从source通道读取。
+</p>
+</div>
+
+<div id="outline-container-orgheadline26" class="outline-4">
+<h4 id="orgheadline26"><span class="section-number-4">3.6.1</span> Producer 线程写数据</h4>
+<div class="outline-text-4" id="text-3-6-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">package</span> <span style="color: #a45bad;">test</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">io</span>.<span style="color: #ce537a; font-weight: bold;">IOException</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #ce537a; font-weight: bold;">ByteBuffer</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">Pipe</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #a45bad;">Pipe</span>.<span style="color: #ce537a; font-weight: bold;">SinkChannel</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Producer</span> <span style="color: #4f97d7; font-weight: bold;">implements</span> <span style="color: #ce537a; font-weight: bold;">Runnable</span> <span style="color: #4f97d7;">{</span>
+
+  <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">SinkChannel</span> <span style="color: #7590db;">channel</span>;
+
+  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">Producer</span><span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">Pipe</span>.<span style="color: #ce537a; font-weight: bold;">SinkChannel</span> <span style="color: #7590db;">channel</span><span style="color: #bc6ec5;">)</span> <span style="color: #bc6ec5;">{</span>
+    <span style="color: #4f97d7; font-weight: bold;">this</span>.channel = channel;
+  <span style="color: #bc6ec5;">}</span>
+
+  <span style="color: #a45bad;">@Override</span>
+  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">run</span><span style="color: #bc6ec5;">()</span> <span style="color: #bc6ec5;">{</span>
+    <span style="color: #4f97d7; font-weight: bold;">try</span> <span style="color: #2d9574;">{</span>
+      <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">message</span> = <span style="color: #2d9574;">"message from producer"</span>;
+      channel.write<span style="color: #67b11d;">(</span>ByteBuffer.wrap<span style="color: #b1951d;">(</span>message.getBytes<span style="color: #4f97d7;">()</span><span style="color: #b1951d;">)</span><span style="color: #67b11d;">)</span>;
+    <span style="color: #2d9574;">}</span> <span style="color: #4f97d7; font-weight: bold;">catch</span> <span style="color: #2d9574;">(</span><span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #7590db;">e</span><span style="color: #2d9574;">)</span> <span style="color: #2d9574;">{</span>
+      e.printStackTrace<span style="color: #67b11d;">()</span>;
+    <span style="color: #2d9574;">}</span>
+  <span style="color: #bc6ec5;">}</span>
+
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline27" class="outline-4">
+<h4 id="orgheadline27"><span class="section-number-4">3.6.2</span> Consumer 线程读数据</h4>
+<div class="outline-text-4" id="text-3-6-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">package</span> <span style="color: #a45bad;">test</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">io</span>.<span style="color: #ce537a; font-weight: bold;">IOException</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #ce537a; font-weight: bold;">ByteBuffer</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">Pipe</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Consumer</span> <span style="color: #4f97d7; font-weight: bold;">implements</span> <span style="color: #ce537a; font-weight: bold;">Runnable</span> <span style="color: #4f97d7;">{</span>
+  <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #a45bad;">Pipe</span>.<span style="color: #ce537a; font-weight: bold;">SourceChannel</span> <span style="color: #7590db;">channel</span>;
+
+  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">Consumer</span><span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">Pipe</span>.<span style="color: #ce537a; font-weight: bold;">SourceChannel</span> <span style="color: #7590db;">channel</span><span style="color: #bc6ec5;">)</span> <span style="color: #bc6ec5;">{</span>
+    <span style="color: #4f97d7; font-weight: bold;">this</span>.channel = channel;
+  <span style="color: #bc6ec5;">}</span>
+
+  <span style="color: #a45bad;">@Override</span>
+  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">run</span><span style="color: #bc6ec5;">()</span> <span style="color: #bc6ec5;">{</span>
+    <span style="color: #4f97d7; font-weight: bold;">try</span> <span style="color: #2d9574;">{</span>
+      Thread.sleep<span style="color: #67b11d;">(</span><span style="color: #a45bad;">2000</span><span style="color: #67b11d;">)</span>;
+      <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #67b11d;">(</span><span style="color: #a45bad;">1024</span><span style="color: #67b11d;">)</span>;
+      channel.read<span style="color: #67b11d;">(</span>buffer<span style="color: #67b11d;">)</span>;
+      buffer.flip<span style="color: #67b11d;">()</span>;
+      <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #67b11d;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #67b11d;">[</span>buffer.remaining<span style="color: #b1951d;">()</span><span style="color: #67b11d;">]</span>;
+      buffer.get<span style="color: #67b11d;">(</span>bytes<span style="color: #67b11d;">)</span>;
+      <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">message</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #67b11d;">(</span>bytes<span style="color: #67b11d;">)</span>;
+      System.out.println<span style="color: #67b11d;">(</span>message<span style="color: #67b11d;">)</span>;
+    <span style="color: #2d9574;">}</span> <span style="color: #4f97d7; font-weight: bold;">catch</span> <span style="color: #2d9574;">(</span><span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #7590db;">e</span><span style="color: #2d9574;">)</span> <span style="color: #2d9574;">{</span>
+      e.printStackTrace<span style="color: #67b11d;">()</span>;
+    <span style="color: #2d9574;">}</span> <span style="color: #4f97d7; font-weight: bold;">catch</span> <span style="color: #2d9574;">(</span><span style="color: #ce537a; font-weight: bold;">InterruptedException</span> <span style="color: #7590db;">e</span><span style="color: #2d9574;">)</span> <span style="color: #2d9574;">{</span>
+      e.printStackTrace<span style="color: #67b11d;">()</span>;
+    <span style="color: #2d9574;">}</span>
+  <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline28" class="outline-4">
+<h4 id="orgheadline28"><span class="section-number-4">3.6.3</span> 测试</h4>
+<div class="outline-text-4" id="text-3-6-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">Pipe</span> <span style="color: #7590db;">pipe</span> = Pipe.open<span style="color: #bc6ec5;">()</span>;
+    <span style="color: #ce537a; font-weight: bold;">Producer</span> <span style="color: #7590db;">producer</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Producer</span><span style="color: #bc6ec5;">(</span>pipe.sink<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">Consumer</span> <span style="color: #7590db;">consumer</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Consumer</span><span style="color: #bc6ec5;">(</span>pipe.source<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">Thread</span> <span style="color: #7590db;">t1</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Thread</span><span style="color: #bc6ec5;">(</span>producer<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">Thread</span> <span style="color: #7590db;">t2</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Thread</span><span style="color: #bc6ec5;">(</span>consumer<span style="color: #bc6ec5;">)</span>;
+    t1.start<span style="color: #bc6ec5;">()</span>;
+    t2.start<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline33" class="outline-2">
+<h2 id="orgheadline33"><span class="section-number-2">4</span> Selector</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Selector（选择器）是Java NIO中能够检测一到多个NIO通道，并能够知晓通道是否为诸如读写事件做好准备的组件。
+NIO基于Selector实现了同步非阻塞。
+</p>
+</div>
+
+<div id="outline-container-orgheadline31" class="outline-4">
+<h4 id="orgheadline31"><span class="section-number-4">4.0.1</span> Selector使用的基本步骤</h4>
+<div class="outline-text-4" id="text-4-0-1">
+<ol class="org-ol">
+<li>创建Selector</li>
+<li>向Selector注册Channel</li>
+<li>通过Selector选择Channel</li>
+<li>处理Channel时间</li>
+<li>使用完后关闭Selector</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgheadline32" class="outline-4">
+<h4 id="orgheadline32"><span class="section-number-4">4.0.2</span> Selector使用示例</h4>
+<div class="outline-text-4" id="text-4-0-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">package</span> <span style="color: #a45bad;">test</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">io</span>.<span style="color: #ce537a; font-weight: bold;">IOException</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">net</span>.<span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #ce537a; font-weight: bold;">ByteBuffer</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">SelectionKey</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">Selector</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">ServerSocketChannel</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">nio</span>.<span style="color: #a45bad;">channels</span>.<span style="color: #ce537a; font-weight: bold;">SocketChannel</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">util</span>.<span style="color: #ce537a; font-weight: bold;">Iterator</span>;
+<span style="color: #4f97d7; font-weight: bold;">import</span> <span style="color: #a45bad;">java</span>.<span style="color: #a45bad;">util</span>.<span style="color: #ce537a; font-weight: bold;">Set</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Main</span> <span style="color: #4f97d7;">{</span>
+
+  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">[]</span> <span style="color: #7590db;">args</span><span style="color: #bc6ec5;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #bc6ec5;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">boolean</span> <span style="color: #7590db;">isExit</span> = <span style="color: #a45bad;">false</span>;
+    <span style="color: #ce537a; font-weight: bold;">ServerSocketChannel</span> <span style="color: #7590db;">serverChannel</span> = ServerSocketChannel.open<span style="color: #2d9574;">()</span>;
+    serverChannel.socket<span style="color: #2d9574;">()</span>.bind<span style="color: #2d9574;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">InetSocketAddress</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"localhost"</span>, <span style="color: #a45bad;">8818</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">)</span>;
+    serverChannel.configureBlocking<span style="color: #2d9574;">(</span><span style="color: #a45bad;">false</span><span style="color: #2d9574;">)</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">Selector</span> <span style="color: #7590db;">selector</span> = Selector.open<span style="color: #2d9574;">()</span>;
+    serverChannel.register<span style="color: #2d9574;">(</span>selector, <span style="color: #a45bad;">SelectionKey</span>.OP_ACCEPT<span style="color: #2d9574;">)</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">while</span> <span style="color: #2d9574;">(</span><span style="color: #a45bad;">true</span><span style="color: #2d9574;">)</span> <span style="color: #2d9574;">{</span>
+      <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">num</span> = selector.select<span style="color: #67b11d;">()</span>;
+      <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #67b11d;">(</span>num &lt; <span style="color: #a45bad;">1</span><span style="color: #67b11d;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">continue</span>;
+      <span style="color: #ce537a; font-weight: bold;">Set</span><span style="color: #67b11d;">&lt;</span><span style="color: #ce537a; font-weight: bold;">SelectionKey</span><span style="color: #67b11d;">&gt;</span> <span style="color: #7590db;">keys</span> = selector.selectedKeys<span style="color: #67b11d;">()</span>;
+      <span style="color: #ce537a; font-weight: bold;">Iterator</span><span style="color: #67b11d;">&lt;</span><span style="color: #ce537a; font-weight: bold;">SelectionKey</span><span style="color: #67b11d;">&gt;</span> <span style="color: #7590db;">it</span> = keys.iterator<span style="color: #67b11d;">()</span>;
+      <span style="color: #4f97d7; font-weight: bold;">while</span> <span style="color: #67b11d;">(</span>it.hasNext<span style="color: #b1951d;">()</span><span style="color: #67b11d;">)</span> <span style="color: #67b11d;">{</span>
+        <span style="color: #ce537a; font-weight: bold;">SelectionKey</span> <span style="color: #7590db;">key</span> = <span style="color: #b1951d;">(</span><span style="color: #ce537a; font-weight: bold;">SelectionKey</span><span style="color: #b1951d;">)</span> it.next<span style="color: #b1951d;">()</span>;
+        <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #b1951d;">(</span><span style="color: #4f97d7;">(</span>key.readyOps<span style="color: #bc6ec5;">()</span> &amp; <span style="color: #a45bad;">SelectionKey</span>.OP_ACCEPT<span style="color: #4f97d7;">)</span> == <span style="color: #a45bad;">SelectionKey</span>.OP_ACCEPT<span style="color: #b1951d;">)</span> <span style="color: #b1951d;">{</span>
+          <span style="color: #ce537a; font-weight: bold;">ServerSocketChannel</span> <span style="color: #7590db;">server</span> = <span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">ServerSocketChannel</span><span style="color: #4f97d7;">)</span> key.channel<span style="color: #4f97d7;">()</span>;
+          <span style="color: #ce537a; font-weight: bold;">SocketChannel</span> <span style="color: #7590db;">channel</span> = server.accept<span style="color: #4f97d7;">()</span>;
+          channel.configureBlocking<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">false</span><span style="color: #4f97d7;">)</span>;
+          channel.register<span style="color: #4f97d7;">(</span>selector, <span style="color: #a45bad;">SelectionKey</span>.OP_READ<span style="color: #4f97d7;">)</span>;
+          it.remove<span style="color: #4f97d7;">()</span>;
+        <span style="color: #b1951d;">}</span> <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #b1951d;">(</span><span style="color: #4f97d7;">(</span>key.readyOps<span style="color: #bc6ec5;">()</span> &amp; <span style="color: #a45bad;">SelectionKey</span>.OP_READ<span style="color: #4f97d7;">)</span> == <span style="color: #a45bad;">SelectionKey</span>.OP_READ<span style="color: #b1951d;">)</span> <span style="color: #b1951d;">{</span>
+          <span style="color: #ce537a; font-weight: bold;">SocketChannel</span> <span style="color: #7590db;">channel</span> = <span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">SocketChannel</span><span style="color: #4f97d7;">)</span> key.channel<span style="color: #4f97d7;">()</span>;
+          <span style="color: #ce537a; font-weight: bold;">StringBuilder</span> <span style="color: #7590db;">sb</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">StringBuilder</span><span style="color: #4f97d7;">()</span>;
+          <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buffer</span> = ByteBuffer.allocate<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">1024</span><span style="color: #4f97d7;">)</span>;
+          <span style="color: #4f97d7; font-weight: bold;">while</span> <span style="color: #4f97d7;">(</span>channel.read<span style="color: #bc6ec5;">(</span>buffer<span style="color: #bc6ec5;">)</span> &gt; <span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7;">{</span>
+            buffer.flip<span style="color: #bc6ec5;">()</span>;
+            <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bytes</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">byte</span><span style="color: #bc6ec5;">[</span>buffer.remaining<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">]</span>;
+            buffer.get<span style="color: #bc6ec5;">(</span>bytes<span style="color: #bc6ec5;">)</span>;
+            <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">part</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">(</span>bytes<span style="color: #bc6ec5;">)</span>;
+            sb.append<span style="color: #bc6ec5;">(</span>part<span style="color: #bc6ec5;">)</span>;
+            buffer.clear<span style="color: #bc6ec5;">()</span>;
+          <span style="color: #4f97d7;">}</span>
+          <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">message</span> = sb.toString<span style="color: #4f97d7;">()</span>;
+          System.out.println<span style="color: #4f97d7;">(</span>message<span style="color: #4f97d7;">)</span>;
+          <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"exit"</span>.equals<span style="color: #bc6ec5;">(</span>message<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+            isExit = <span style="color: #a45bad;">true</span>;
+        <span style="color: #b1951d;">}</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #b1951d;">(</span>isExit<span style="color: #b1951d;">)</span>
+          <span style="color: #4f97d7; font-weight: bold;">break</span>;
+      <span style="color: #67b11d;">}</span>
+      <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #67b11d;">(</span>isExit<span style="color: #67b11d;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    <span style="color: #2d9574;">}</span>
+    selector.close<span style="color: #2d9574;">()</span>;
+    serverChannel.close<span style="color: #2d9574;">()</span>;
+  <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline36" class="outline-2">
+<h2 id="orgheadline36"><span class="section-number-2">5</span> Scatter/Gather</h2>
+<div class="outline-text-2" id="text-5">
+</div><div id="outline-container-orgheadline34" class="outline-3">
+<h3 id="orgheadline34"><span class="section-number-3">5.1</span> Scattering Reads</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+Scattering Reads是指数据从一个channel读取到多个buffer中。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">FileChannel</span> <span style="color: #7590db;">channel</span> = FileChannel.open<span style="color: #bc6ec5;">(</span>Paths.get<span style="color: #2d9574;">(</span><span style="color: #2d9574;">"E:/data.txt"</span><span style="color: #2d9574;">)</span>, <span style="color: #a45bad;">StandardOpenOption</span>.READ<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">first</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">11</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">second</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">12</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">third</span> = ByteBuffer.allocate<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">11</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">bufferArray</span> = <span style="color: #bc6ec5;">{</span> first, second, third <span style="color: #bc6ec5;">}</span>;
+    channel.read<span style="color: #bc6ec5;">(</span>bufferArray<span style="color: #bc6ec5;">)</span>;
+    channel.close<span style="color: #bc6ec5;">()</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>first.array<span style="color: #67b11d;">()</span>, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>second.array<span style="color: #67b11d;">()</span>, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+    System.out.println<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #2d9574;">(</span>third.array<span style="color: #67b11d;">()</span>, <span style="color: #2d9574;">"UTF-8"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">First part.
+Second part.
+Third part.
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline35" class="outline-3">
+<h3 id="orgheadline35"><span class="section-number-3">5.2</span> Gathering Writes</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+Gathering Writes是指数据从多个buffer写入到同一个channel。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">String</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">args</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">throws</span> <span style="color: #ce537a; font-weight: bold;">IOException</span> <span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">FileChannel</span> <span style="color: #7590db;">channel</span> = FileChannel.open<span style="color: #bc6ec5;">(</span>Paths.get<span style="color: #2d9574;">(</span><span style="color: #2d9574;">"E:/data.txt"</span><span style="color: #2d9574;">)</span>, <span style="color: #a45bad;">StandardOpenOption</span>.WRITE<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buf1</span> = ByteBuffer.wrap<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"First part."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buf2</span> = ByteBuffer.wrap<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Second part."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span> <span style="color: #7590db;">buf3</span> = ByteBuffer.wrap<span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Third part."</span>.getBytes<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">ByteBuffer</span><span style="color: #bc6ec5;">[]</span> <span style="color: #7590db;">buffers</span> = <span style="color: #bc6ec5;">{</span> buf1, buf2, buf3 <span style="color: #bc6ec5;">}</span>;
+    channel.write<span style="color: #bc6ec5;">(</span>buffers<span style="color: #bc6ec5;">)</span>;
+    channel.close<span style="color: #bc6ec5;">()</span>;
+  <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+<pre class="example">First part.Second part.Third part.
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr><p class="author">Author: Li Guangsheng (<a href="mailto:670118818@qq.com">670118818@qq.com</a>)<br>Date: 2016-04-13<br>Last Modify: 2016-04-19 周二 14:53<br><a href="http://www.gnu.org/software/emacs/">Emacs</a> 25.0.50.1 (<a href="http://orgmode.org/">Org</a> mode 8.3.4)</p>
+</div>
+
+
+</body></html>
