@@ -68,4 +68,6 @@ theme: freemind
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type:github
+  repository:https://github.com/Loki58/Loki58.github.io.git
+  branch:master
